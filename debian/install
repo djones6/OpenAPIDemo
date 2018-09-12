@@ -1,0 +1,3 @@
+.build/							usr/src/OpenAPIDemo
+terraform/scripts/install.sh	usr/src/OpenAPIDemo
+terraform/scripts/start.sh		usr/src/OpenAPIDemo
