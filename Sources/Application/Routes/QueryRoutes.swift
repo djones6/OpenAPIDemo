@@ -55,6 +55,19 @@ func initializeQueryRoutes(app: App) {
         Person.findAll(respondWith)
     }
 
+    // TODO: Bug: Swagger lists the Id as an input param, not an output type
+    // Get all Persons with their ID
+    app.router.get("/peopleId") { (respondWith: @escaping ([(Int, Person)]?, RequestError?) -> Void) in
+        Person.findAll(respondWith)
+    }
+
+    // TODO: Bug: Swagger lists the Id as an input param, not an output type
+    // POST a person, returning the assigned Id
+    app.router.post("/personId") { (person: Person, respondWith: @escaping (Int?, Person?, RequestError?) -> Void) in
+        person.save(respondWith)
+    }
+
+
     // Swagger looks OK (each param is "required": false)
     // Get a single Person from a query
     app.router.get("/personOpt") { (params: MyOptionalParams, respondWith: @escaping (Person?, RequestError?) -> Void) in

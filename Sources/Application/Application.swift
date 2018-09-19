@@ -30,6 +30,9 @@ public class App {
 
     func postInit() throws {
         // Endpoints
+        // Static file server
+        router.all(middleware: StaticFileServer())
+        // OpenAPI
         let openApiConfig = KituraOpenAPIConfig(apiPath: "/demoapi", swaggerUIPath: "/demoapi/ui")
         KituraOpenAPI.addEndpoints(to: router, with: openApiConfig)
         initializeHealthRoutes(app: self)
