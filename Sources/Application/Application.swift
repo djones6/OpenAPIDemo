@@ -37,6 +37,7 @@ public class App {
         KituraOpenAPI.addEndpoints(to: router, with: openApiConfig)
         initializeHealthRoutes(app: self)
         initializeQueryRoutes(app: self)
+        initializeTestRoutes(app: self)
         Persistence.setUp()
         do {
             try Person.createTableSync()

@@ -3,12 +3,6 @@ import KituraContracts
 
 func initializeQueryRoutes(app: App) {
 
-    // Check that objects that descend from NSObject are correctly represented
-    app.router.get("/nsObjectDescendent") { (respondWith: @escaping (TestType?, RequestError?) -> Void) in
-        let test = TestType()
-        respondWith(test, nil)
-    }
-
     // Swagger looks OK
     // Get a single Person from a query
     app.router.get("/person") { (params: MySimpleParams, respondWith: @escaping (Person?, RequestError?) -> Void) in
