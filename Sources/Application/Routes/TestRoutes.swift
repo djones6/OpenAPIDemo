@@ -13,6 +13,7 @@ func initializeTestRoutes(app: App) {
         completion(nil, nil)
     }
 
+    // BUG: Swagger describes ref to Array<TestTypeTwo>
     app.router.get("/nsObjectDescendentTwo2") { (id: String, completion: @escaping ([TestTypeTwo]?, RequestError?) -> Void ) in
         completion(nil, nil)
     }
