@@ -18,4 +18,9 @@ func initializeTestRoutes(app: App) {
         completion(nil, nil)
     }
 
+    // Test that TypeDecoder can process a type that performs validation
+    app.router.get("/nsObjectDescendentThree") { (completion: @escaping ([TestTypeThree]?, RequestError?) -> Void ) in
+        completion(nil, nil)
+    }
+
 }
