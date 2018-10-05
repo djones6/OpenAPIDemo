@@ -1,3 +1,4 @@
+// Prototype Validatable protocol
 public protocol Validatable {
     func validate() throws
 }
