@@ -26,10 +26,11 @@ public enum Fruit: String, Codable {
     case apple, banana, orange, pear
 }
 
-extension Fruit: DummyCodingValueProvider {
+extension Fruit: ValidSingleCodingValueProvider {
     // Provide one of the cases as a dummy value
-    public static func dummyCodingValue() -> Any? {
+    public static func validCodingValue() -> Any? {
         return self.apple.rawValue
+        //return "spanner"
     }
 }
 
@@ -54,12 +55,13 @@ public class YoungAdult: Codable {
     }
 }
 
-extension YoungAdult: DummyKeyedCodingValueProvider {
+extension YoungAdult: ValidKeyedCodingValueProvider {
     // Provide a value for age while decoding that satisfies the validation criteria
-    public static func dummyCodingValue(forKey key: CodingKey) -> Any? {
+    public static func validCodingValue(forKey key: CodingKey) -> Any? {
         switch key.stringValue {
         case self.CodingKeys.age.stringValue:
             return 20
+            //return 12345
         default:
             return nil
         }
