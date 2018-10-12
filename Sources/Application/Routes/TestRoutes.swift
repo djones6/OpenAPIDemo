@@ -4,8 +4,9 @@ import KituraContracts
 func initializeTestRoutes(app: App) {
 
     // Check that objects that descend from NSObject are correctly represented
-    // and that TypeDecoder can process a type that performs validations (with
-    // the appropriate exposure of DummyCodingKeyProvider protocols)
+    // and that TypeDecoder can process a type that performs validations
+    // Nested types (Fruit, YoungAdult) are validated via ValidKeyedCodingKeyProvider
+    // and ValidSingleCodingKeyProvider conformances.
     app.router.get("/testTypeSingular") { (respondWith: @escaping (ContainsValidations?, RequestError?) -> Void) in
         respondWith(nil, nil)
     }
@@ -15,6 +16,13 @@ func initializeTestRoutes(app: App) {
     }
 
     app.router.get("/testTypeArray") { (completion: @escaping ([ContainsValidations]?, RequestError?) -> Void ) in
+        completion(nil, nil)
+    }
+
+    // Direct reference to an enum with String raw value: Swagger looks OK
+    // (described simply as String)
+    // Type is validated via ValidSingleCodingKeyProvider conformance
+    app.router.get("/fruit") { (completion: @escaping ([Fruit]?, RequestError?) -> Void ) in
         completion(nil, nil)
     }
 
@@ -40,6 +48,22 @@ func initializeTestRoutes(app: App) {
     //
     app.router.get("/testTypeTwoById") { (id: String, completion: @escaping ([TestTypeTwo]?, RequestError?) -> Void ) in
         completion(nil, nil)
+    }
+
+    // Test whether SwaggerGenerator copes with a type that has a single value
+    // on-the-wire representation that is itself a keyed (complex) type.
+    //
+    // BUG: Swagger doesn't model SingleValueComplexType (although it does model
+    // the embedded ComplexThing type), but makes reference to it (which is broken).
+    //
+    // The SingleValueComplexType really _is_ just a ComplexThing on the wire (and
+    // SwaggerGenerator should refer to it directly)
+    app.router.get("/singleComplex") { (completion: @escaping (SingleValueComplexType?, RequestError?) -> Void ) in
+        completion(SingleValueComplexType(thing: ComplexThing(foo: "foo", bar: 1)), nil)
+    }
+
+    app.router.post("/singleComplex") { (param: SingleValueComplexType, completion: @escaping (SingleValueComplexType?, RequestError?) -> Void ) in
+        completion(param, nil)
     }
 
 }
