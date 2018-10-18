@@ -1,5 +1,7 @@
 import LoggerAPI
 import KituraContracts
+import Foundation
+import TypeDecoder
 
 func initializeTestRoutes(app: App) {
 
@@ -18,12 +20,18 @@ func initializeTestRoutes(app: App) {
     app.router.get("/testTypeArray") { (completion: @escaping ([ContainsValidations]?, RequestError?) -> Void ) in
         completion(nil, nil)
     }
+    
+    // Fruit serializes as an unkeyed String, so we cannot have a Fruit
+    // as a top-level type (even though it is Codable).
 
-    // Direct reference to an enum with String raw value: Swagger looks OK
-    // (described simply as String)
     // Type is validated via ValidSingleCodingKeyProvider conformance
-    app.router.get("/fruit") { (completion: @escaping ([Fruit]?, RequestError?) -> Void ) in
-        completion(nil, nil)
+    app.router.get("/fruit") { (completion: @escaping ([FruitContainer]?, RequestError?) -> Void ) in
+        completion([FruitContainer(fruit: .apple), FruitContainer(fruit: .banana)], nil)
+    }
+
+    // Top-level type needs to be a container (keyed or unkeyed).
+    app.router.post("/fruit") { (fruit: FruitContainer, completion: @escaping (FruitContainer?, RequestError?) -> Void ) in
+        completion(fruit, nil)
     }
 
     // Test that a variety of ways of nesting Swift types within different TypeDecoder
@@ -58,12 +66,29 @@ func initializeTestRoutes(app: App) {
     //
     // The SingleValueComplexType really _is_ just a ComplexThing on the wire (and
     // SwaggerGenerator should refer to it directly)
+    //
+    // TypeDecoder returns .keyed(ComplexThing, OrderedDictionary<String, TypeInfo>)
+    // - this doesn't seem right. We've lost visibility of SingleValueComplexType
+    //   completely.
     app.router.get("/singleComplex") { (completion: @escaping (SingleValueComplexType?, RequestError?) -> Void ) in
         completion(SingleValueComplexType(thing: ComplexThing(foo: "foo", bar: 1)), nil)
     }
 
     app.router.post("/singleComplex") { (param: SingleValueComplexType, completion: @escaping (SingleValueComplexType?, RequestError?) -> Void ) in
         completion(param, nil)
+    }
+
+    // TypeDecoder returns .single(SingleValueStringType, String) for a SingleValueStringType
+    // - this is an invalid top-level Codable as it does not encode to a JSON document,
+    // though it can be embedded within another Codable type.
+    app.router.get("/singleString") { (completion: @escaping (SingleValueStringTypeContainer?, RequestError?) -> Void ) in
+        completion(SingleValueStringTypeContainer(containing: SingleValueStringType(thing: "foo")), nil)
+    }
+
+    // Same as SingleValueStringType: TypeDecoder returns .single(UUID, String)
+    // This is invalid as UUID cannot be used at the top level.
+    app.router.get("/uuid") { (completion: @escaping (UUID?, RequestError?) -> Void) in
+        completion(UUID(), nil)
     }
 
 }

@@ -34,6 +34,11 @@ extension Fruit: ValidSingleCodingValueProvider {
     }
 }
 
+// A top-level type to contain a Fruit (single String value)
+public struct FruitContainer: Codable {
+    let fruit: Fruit
+}
+
 
 //
 // Use DummyKeyedCodingValueProvider to supply a valid string while
