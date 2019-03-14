@@ -28,6 +28,28 @@ public class App {
         initializeMetrics(router: router)
     }
 
+    // Set JSON encoding of Date to ISO8601 format
+    func configureEncoders() {
+        router.encoders = [
+            .json: {
+                let encoder = JSONEncoder()
+                if #available(OSX 10.12, *) {
+                    encoder.dateEncodingStrategy = .iso8601
+                }
+                return encoder
+            }
+        ]
+        router.decoders = [
+            .json: {
+                let decoder = JSONDecoder()
+                if #available(OSX 10.12, *) {
+                    decoder.dateDecodingStrategy = .iso8601
+                }
+                return decoder
+            }
+        ]
+    }
+
     func postInit() throws {
         // Endpoints
         // Static file server
@@ -35,6 +57,7 @@ public class App {
         // OpenAPI
         let openApiConfig = KituraOpenAPIConfig(apiPath: "/demoapi", swaggerUIPath: "/demoapi/ui")
         KituraOpenAPI.addEndpoints(to: router, with: openApiConfig)
+        configureEncoders()
         initializeHealthRoutes(app: self)
         initializeQueryRoutes(app: self)
         initializeTestRoutes(app: self)

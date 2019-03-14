@@ -1,5 +1,6 @@
 import LoggerAPI
 import KituraContracts
+import Foundation
 
 func initializeQueryRoutes(app: App) {
 
@@ -58,7 +59,7 @@ func initializeQueryRoutes(app: App) {
 
     // Create a Person (different but compatible type for input)
     app.router.post("/personDifferentType") { (inputPerson: InputPerson, respondWith: @escaping (Person?, RequestError?) -> Void) in
-        let person = Person(name: inputPerson.name, age: inputPerson.age)
+        let person = Person(name: inputPerson.name, age: inputPerson.age, birthday: inputPerson.birthday)
         person.save(respondWith)
     }
 
@@ -120,7 +121,7 @@ func initializeQueryRoutes(app: App) {
 
     // Custom Identifier type
     app.router.get("/customIdentifier") { (id: MyIdentifier, respondWith: (Person?, RequestError?) -> Void) in
-        respondWith(Person(name: "Fred", age: 3), nil)
+        respondWith(Person(name: "Fred", age: 3, birthday: Date()), nil)
     }
 
 }
