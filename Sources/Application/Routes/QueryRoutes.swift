@@ -18,6 +18,16 @@ func initializeQueryRoutes(app: App) {
         }
     }
 
+    // Get a single person by ID
+    app.router.get("/personById") { (id: Int, respondWith: @escaping (Person?, RequestError?) -> Void) in
+        Person.find(id: id) { (person, error) in
+            guard let person = person else {
+                return respondWith(nil, error)
+            }
+            return respondWith(person, nil)
+        }
+    }
+
     // Swagger looks OK (no TSMW representation capability)
     // Get a single Person from a query
     app.router.get("/personTSMW") { (middleware: MyMiddleware, params: MySimpleParams, respondWith: @escaping (Person?, RequestError?) -> Void) in
@@ -75,15 +85,13 @@ func initializeQueryRoutes(app: App) {
         Person.findAll(respondWith)
     }
 
-    // TODO: Bug: Swagger lists the Id as an input param, not an output type
-    // https://github.com/IBM-Swift/Kitura/issues/1336
+    // Fixed: https://github.com/IBM-Swift/Kitura/pull/1347
     // Get all Persons with their ID
     app.router.get("/peopleId") { (respondWith: @escaping ([(Int, Person)]?, RequestError?) -> Void) in
         Person.findAll(respondWith)
     }
 
-    // TODO: Bug: Swagger lists the Id as an input param, not an output type
-    // https://github.com/IBM-Swift/Kitura/issues/1336
+    // Fixed: https://github.com/IBM-Swift/Kitura/pull/1347
     // POST a person, returning the assigned Id
     app.router.post("/personId") { (person: Person, respondWith: @escaping (Int?, Person?, RequestError?) -> Void) in
         person.save(respondWith)
@@ -120,6 +128,7 @@ func initializeQueryRoutes(app: App) {
     }
 
     // Custom Identifier type
+    // BUG: This ends up with idReturned=true in addPath
     app.router.get("/customIdentifier") { (id: MyIdentifier, respondWith: (Person?, RequestError?) -> Void) in
         respondWith(Person(name: "Fred", age: 3, birthday: Date()), nil)
     }
